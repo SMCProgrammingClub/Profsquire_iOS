@@ -27,7 +27,6 @@ class ProfessorProfileViewController: UIViewController, UITableViewDelegate, UIT
         super.viewDidLoad()
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Rate", style: UIBarButtonItemStyle.Plain, target: self, action: "segueToRatingScreen")
         
-        
         baseScrollView.delegate = self
         //professorCourses.delegate = self
         //professorCourses.dataSource = self
@@ -41,14 +40,16 @@ class ProfessorProfileViewController: UIViewController, UITableViewDelegate, UIT
         }
         self.navigationItem.title = professorLastName
         
-        // Retreive the managedObjectContext from AppDelegate
-        let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
-        let fetchRequestCourses = NSFetchRequest(entityName: "Course")
-        let predicate = NSPredicate(format: "professor == %@", selectedProfessor)
-        fetchRequestCourses.predicate = predicate
-        if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequestCourses, error: nil) as? [Course] {
-            courses = fetchResults
-            courses = courses.sorted({$0.title < $1.title})
+        if selectedCourse != nil {
+            // Retreive the managedObjectContext from AppDelegate
+            let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+            let fetchRequestCourses = NSFetchRequest(entityName: "Course")
+            let predicate = NSPredicate(format: "professor == %@", selectedProfessor)
+            fetchRequestCourses.predicate = predicate
+            if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequestCourses, error: nil) as? [Course] {
+                courses = fetchResults
+                courses = courses.sorted({$0.title < $1.title})
+            }
         }
     }
 

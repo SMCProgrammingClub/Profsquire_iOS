@@ -14,13 +14,14 @@ class ProfessorsTableViewController: UITableViewController, UISearchBarDelegate 
     @IBOutlet weak var selectionOrderButton_Alphabetical: UIButton!
     @IBOutlet weak var selectionOrderButton_TopRating: UIButton!
     @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var progressIndicator: UIActivityIndicatorView!
     
     // Retreive the managedObjectContext from AppDelegate
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
     
     var professors: [Professor] = []
     //list of unique names
-    var professorSearchResults: [Professor]!
+    var professorSearchResults: [Professor] = []
     
     var selectedCourse: Course? // this is nil if it didn't enter in from the course view.
     
@@ -31,10 +32,43 @@ class ProfessorsTableViewController: UITableViewController, UISearchBarDelegate 
             //If this view was entered from the Professor button, then there was no course selected so fetchRequest every professor.
             self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Home", style: UIBarButtonItemStyle.Plain, target: self, action: "homeButton")
             
-            let fetchRequestProfessors = NSFetchRequest(entityName: "Professor")
-            if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequestProfessors, error: nil) as? [Professor] {
-                professors = fetchResults
-            }
+            //Thread split for loading all professor data...
+            
+            let qualityOfServiceClass = QOS_CLASS_BACKGROUND
+            let backgroundQueue = dispatch_get_global_queue(qualityOfServiceClass, 0)
+            dispatch_async(backgroundQueue, {
+                
+                println("This is run on the background queue")
+                self.progressIndicator.startAnimating()
+                let fetchRequestProfessors = NSFetchRequest(entityName: "Professor")
+                if let fetchResults = self.managedObjectContext!.executeFetchRequest(fetchRequestProfessors, error: nil) as? [Professor] {
+                    self.professors = fetchResults
+                }
+                //Sort all fetched professors by name
+                self.professors = self.professors.sorted({$0.name < $1.name})
+                
+                //Removes duplicates by making tempProf list
+                var tempProfs: [Professor] = []
+                for prf in self.professors {
+                    if tempProfs.filter({$0.name == prf.name}).count == 0 {
+                        tempProfs.append(prf)
+                    }
+                }
+                self.professors = tempProfs
+                self.professorSearchResults = self.professors
+                
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    
+                    //This runs on the main thread after the previous code is run. Basically signals completion of other thread.
+                    self.progressIndicator.hidden = true
+                    self.searchBar.hidden = false
+                    self.selectionOrderButton_Alphabetical.hidden = false
+                    self.selectionOrderButton_TopRating.hidden = false
+                    self.tableView.reloadData()
+                    
+                })
+            })
+            
         } else {
             //Else this view was entered after selected a course, therefore get every professor who teaches a course with selected title.
             self.navigationItem.title = selectedCourse!.title
@@ -46,21 +80,21 @@ class ProfessorsTableViewController: UITableViewController, UISearchBarDelegate 
                     professors.append(crs.professor)
                 }
             }
-        }
-        
-        //Sort all fetched professors by name
-        professors = professors.sorted({$0.name < $1.name})
-        
-        //Removes duplicates by making tempProf list
-        var tempProfs: [Professor] = []
-        for prf in professors {
-            if tempProfs.filter({$0.name == prf.name}).count == 0 {
-                tempProfs.append(prf)
+            //Sort all fetched professors by name
+            professors = professors.sorted({$0.name < $1.name})
+            
+            //Removes duplicates by making tempProf list
+            var tempProfs: [Professor] = []
+            for prf in professors {
+                if tempProfs.filter({$0.name == prf.name}).count == 0 {
+                    tempProfs.append(prf)
+                }
             }
+            
+            professors = tempProfs
+            professorSearchResults = professors
         }
         
-        professors = tempProfs
-        professorSearchResults = professors
         searchBar.delegate = self
     }
     
@@ -153,8 +187,6 @@ class ProfessorsTableViewController: UITableViewController, UISearchBarDelegate 
                 professorSearchResults = professors
             }
             
-            
-            
             tableView.reloadData()
             println("Top Rating Sorting")
         }
@@ -166,7 +198,7 @@ class ProfessorsTableViewController: UITableViewController, UISearchBarDelegate 
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return professorSearchResults!.count
+        return professorSearchResults.count
     }
     
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
@@ -220,7 +252,7 @@ class ProfessorsTableViewController: UITableViewController, UISearchBarDelegate 
                         destinationView.selectedCourse = courseWithTitleAndProf[0]
                     }
                 }
-                
+            } else {
             }
         }
         searchBar.resignFirstResponder()

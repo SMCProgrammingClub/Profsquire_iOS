@@ -24,6 +24,9 @@ class ProfessorContainerViewController: UIViewController, GradeDistributionBarDe
         if selectedCourse != nil {
             ratingNumberLabel.text = "\(Int(Double(selectedCourse!.grade_distribution.avgGPA)/4.0 * 100.0))"
             println("Grades for selected course:\n    A: \(selectedCourse!.grade_distribution.a)\n    B: \(selectedCourse!.grade_distribution.b)\n    C: \(selectedCourse!.grade_distribution.c)\n    D: \(selectedCourse!.grade_distribution.d)\n    F: \(selectedCourse!.grade_distribution.f)")
+        } else {
+            gradeBarView.hidden = true
+            gradeBar_base.hidden = true
         }
     }
 
@@ -34,6 +37,9 @@ class ProfessorContainerViewController: UIViewController, GradeDistributionBarDe
     // MARK: - Grade Distribution Bar Delegate Functions
     func getA_w() -> Int {
         let base_w = Int(gradeBar_base.frame.width)
+        if selectedCourse == nil {
+            return 0
+        }
         return 1 + Int(Double(selectedCourse!.grade_distribution.a)/Double(selectedCourse!.grade_distribution.total) * Double(base_w))
     }
     func getB_x() -> Int {
@@ -41,6 +47,9 @@ class ProfessorContainerViewController: UIViewController, GradeDistributionBarDe
     }
     func getB_w() -> Int {
         let base_w = Int(gradeBar_base.frame.width)
+        if selectedCourse == nil {
+            return 0
+        }
         return 1 + Int(Double(selectedCourse!.grade_distribution.b)/Double(selectedCourse!.grade_distribution.total) * Double(base_w))
     }
     func getC_x() -> Int {
@@ -48,6 +57,9 @@ class ProfessorContainerViewController: UIViewController, GradeDistributionBarDe
     }
     func getC_w() -> Int {
         let base_w = Int(gradeBar_base.frame.width)
+        if selectedCourse == nil {
+            return 0
+        }
         return 1 + Int(Double(selectedCourse!.grade_distribution.c)/Double(selectedCourse!.grade_distribution.total) * Double(base_w))
     }
     func getD_x() -> Int {
@@ -55,6 +67,9 @@ class ProfessorContainerViewController: UIViewController, GradeDistributionBarDe
     }
     func getD_w() -> Int {
         let base_w = Int(gradeBar_base.frame.width)
+        if selectedCourse == nil {
+            return 0
+        }
         return 1 + Int(Double(selectedCourse!.grade_distribution.d)/Double(selectedCourse!.grade_distribution.total) * Double(base_w))
     }
     func getF_x() -> Int {
@@ -62,6 +77,9 @@ class ProfessorContainerViewController: UIViewController, GradeDistributionBarDe
     }
     func getF_w() -> Int {
         let base_w = Int(gradeBar_base.frame.width)
+        if selectedCourse == nil {
+            return 0
+        }
         return 1 + Int(Double(selectedCourse!.grade_distribution.f)/Double(selectedCourse!.grade_distribution.total) * Double(base_w))
     }
     
