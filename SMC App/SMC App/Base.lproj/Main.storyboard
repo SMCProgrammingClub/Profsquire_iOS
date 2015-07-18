@@ -19,7 +19,7 @@
                             <rect key="frame" x="0.0" y="64" width="600" height="74"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             <subviews>
-                                <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="TopRating" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wfn-Gc-dc4">
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" restorationIdentifier="TopRating" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="wfn-Gc-dc4">
                                     <rect key="frame" x="300" y="44" width="300" height="30"/>
                                     <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                     <state key="normal" title="Top Rating">
@@ -29,7 +29,7 @@
                                         <action selector="OrderSelectionChange:" destination="eAw-ae-pys" eventType="touchUpInside" id="mwS-tU-bQc"/>
                                     </connections>
                                 </button>
-                                <button opaque="NO" contentMode="scaleToFill" restorationIdentifier="Alphabetical" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zHL-vw-GC9">
+                                <button hidden="YES" opaque="NO" contentMode="scaleToFill" restorationIdentifier="Alphabetical" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zHL-vw-GC9">
                                     <rect key="frame" x="0.0" y="44" width="300" height="30"/>
                                     <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                     <constraints>
@@ -42,7 +42,7 @@
                                         <action selector="OrderSelectionChange:" destination="eAw-ae-pys" eventType="touchUpInside" id="uAJ-Rz-3FH"/>
                                     </connections>
                                 </button>
-                                <searchBar contentMode="redraw" placeholder="Professor" translatesAutoresizingMaskIntoConstraints="NO" id="3YI-nC-Q2O">
+                                <searchBar hidden="YES" contentMode="redraw" placeholder="Professor" translatesAutoresizingMaskIntoConstraints="NO" id="3YI-nC-Q2O">
                                     <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                                     <constraints>
                                         <constraint firstAttribute="width" constant="600" id="00e-NN-bNV"/>
@@ -59,6 +59,9 @@
                                         </mask>
                                     </variation>
                                 </searchBar>
+                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="iVV-dQ-WTo">
+                                    <rect key="frame" x="290" y="27" width="20" height="20"/>
+                                </activityIndicatorView>
                             </subviews>
                             <constraints>
                                 <constraint firstItem="wfn-Gc-dc4" firstAttribute="leading" secondItem="zHL-vw-GC9" secondAttribute="trailing" constant="8" id="6c3-N0-Npj"/>
@@ -72,9 +75,11 @@
                                 <constraint firstAttribute="bottom" secondItem="wfn-Gc-dc4" secondAttribute="bottom" id="jPp-4c-xv3"/>
                                 <constraint firstItem="wfn-Gc-dc4" firstAttribute="leading" secondItem="zHL-vw-GC9" secondAttribute="trailing" id="kFq-Sr-bvz"/>
                                 <constraint firstItem="3YI-nC-Q2O" firstAttribute="top" secondItem="DuX-0c-H47" secondAttribute="top" id="pUK-tO-kr9"/>
+                                <constraint firstAttribute="centerY" secondItem="iVV-dQ-WTo" secondAttribute="centerY" id="uZw-6G-nKb"/>
                                 <constraint firstAttribute="centerY" secondItem="zHL-vw-GC9" secondAttribute="centerY" constant="-1" id="vJ7-OC-Pdf"/>
                                 <constraint firstItem="wfn-Gc-dc4" firstAttribute="width" secondItem="zHL-vw-GC9" secondAttribute="width" id="wi0-Q2-LdY"/>
                                 <constraint firstAttribute="trailing" secondItem="wfn-Gc-dc4" secondAttribute="trailing" constant="-8" id="xT5-WK-D0D"/>
+                                <constraint firstAttribute="centerX" secondItem="iVV-dQ-WTo" secondAttribute="centerX" id="xx0-1u-caT"/>
                             </constraints>
                             <variation key="default">
                                 <mask key="constraints">
@@ -117,6 +122,7 @@
                         <barButtonItem key="backBarButtonItem" title="Professors" id="XNf-ZR-oO6"/>
                     </navigationItem>
                     <connections>
+                        <outlet property="progressIndicator" destination="iVV-dQ-WTo" id="vCc-df-gPv"/>
                         <outlet property="searchBar" destination="3YI-nC-Q2O" id="uCu-ui-t31"/>
                         <outlet property="selectionOrderButton_Alphabetical" destination="zHL-vw-GC9" id="JG7-bF-8vg"/>
                         <outlet property="selectionOrderButton_TopRating" destination="wfn-Gc-dc4" id="Z15-zI-tIj"/>
@@ -1020,7 +1026,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OvL-6Z-XuM" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="3715" y="-618.5"/>
+            <point key="canvasLocation" x="3705" y="-616.5"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="riL-Z1-aQV">
