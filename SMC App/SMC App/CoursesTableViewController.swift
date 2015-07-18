@@ -7,35 +7,77 @@
 //
 
 import UIKit
+import CoreData
 
-class CoursesTableViewController: UITableViewController {
+class CoursesTableViewController: UITableViewController, UISearchBarDelegate {
 
-    let tableTestData = ["Math 7", "Math 8", "Math 11", "Math 12", "Math 21", "Math 22", "Math 101", "Math 123", "Math 321", "Math 666"]
-    var departmentSelected:String!
+    var departmentSelected: Department!
+    var courses: [Course]!
+    var courseSearchResults: [Course]!
+    @IBOutlet weak var searchBar: UISearchBar!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.title = departmentSelected
-        // preserve selection between presentations: self.clearsSelectionOnViewWillAppear = false
-        // display an Edit button in the navigation bar for this view controller: self.navigationItem.rightBarButtonItem = self.editButtonItem()
+        self.navigationItem.title = departmentSelected.title
+        searchBar.delegate = self
+        // Retreive the managedObjectContext from AppDelegate
+        let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext
+        let fetchRequestCourses = NSFetchRequest(entityName: "Course")
+        fetchRequestCourses.predicate = NSPredicate(format: "department == %@", departmentSelected)
+        if let fetchResults = managedObjectContext!.executeFetchRequest(fetchRequestCourses, error: nil) as? [Course] {
+            courses = fetchResults
+            courses = courses.sorted({$0.title < $1.title})
+            var tempCourses: [Course] = []
+            for course in courses {
+                if tempCourses.filter({$0.title == course.title}).count == 0 {
+                    tempCourses.append(course)
+                }
+            }
+            courses = tempCourses
+            courseSearchResults = courses
+        }
     }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        navigationController?.hidesBarsOnSwipe = true
-        navigationController?.hidesBarsWhenKeyboardAppears = true
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
     
+    // MARK: - Search Bar
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchText != "" {
+            courseSearchResults = []
+            for crs in courses {
+                if crs.title.lowercaseString.rangeOfString(searchText.lowercaseString) != nil {
+                    courseSearchResults.append(crs)
+                }
+            }
+        } else {
+            courseSearchResults = courses
+        }
+        tableView.reloadData()
+    }
+    
+    func searchBarSearchButtonClicked(searchBar: UISearchBar){
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBarCancelButtonClicked(searchBar: UISearchBar){
+        courseSearchResults = courses
+    }
+    
+    // MARK: - Table View of Courses
+    
     override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
         return 1
     }
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tableTestData.count
+        return courseSearchResults.count
     }
     
     override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
@@ -45,8 +87,7 @@ class CoursesTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("PrototypeCell", forIndexPath: indexPath) as! UITableViewCell
         let row = indexPath.row
-        cell.textLabel?.text = tableTestData[row]
-        cell.textLabel?.textColor = UIColor.whiteColor()
+        cell.textLabel?.text = courseSearchResults[row].title
         
         return cell
     }
@@ -54,18 +95,21 @@ class CoursesTableViewController: UITableViewController {
     override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         let row = indexPath.row
-        println("Selected: " + tableTestData[row])
-        performSegueWithIdentifier("NextView", sender: self)
+        println("Selected: \(courseSearchResults[row])")
+        performSegueWithIdentifier("CourseToProfessor", sender: courseSearchResults[row])
     }
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
+    // MARK: - Segue
+    
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using [segue destinationViewController].
-        // Pass the selected object to the new view controller.
+        if segue.identifier! == "CourseToProfessor"{
+            var destinationView = segue.destinationViewController as! ProfessorsTableViewController
+            if let crs: Course = sender as? Course {
+                destinationView.selectedCourse = crs
+            }
+            searchBar.resignFirstResponder()
+            navigationController?.setNavigationBarHidden(false, animated: true)
+        }
     }
-    */
 
 }
